@@ -21,6 +21,6 @@
     "experimentalDecorators": true
   },
   "include": [
-    "src", "app/layout/App.tsx", "app/layout/App.tsx"
+    "src"
   ]
 }
