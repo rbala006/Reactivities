@@ -1,22 +1,23 @@
 import React, { useContext, useEffect } from "react";
-import { Card, Image, Button } from "semantic-ui-react";
+import { Grid } from "semantic-ui-react";
 import ActivityStore from "../../../app/stores/activityStore";
 import { observer } from "mobx-react-lite";
-import { RouteComponentProps, Link } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import { LoadingComponent } from "../../../app/layout/LoadingComponent";
+import { ActivityDetailedHeader } from "./ActivityDetailedHeader";
+import { ActivityDetailedInfo } from "./ActivityDetailedInfo";
+import { ActivityDetailedChat } from "./ActivityDetailedChat";
+import { ActivityDetailedSideBar } from "./ActivityDetailedSideBar";
 
 interface DetailParams {
   id: string;
 }
 
 export const ActivityDetails: React.FC<RouteComponentProps<DetailParams>> = ({
-  match, history
-}) => {
+  match}) => {
   const activityStore = useContext(ActivityStore);
   const {
     activity,
-    openEditForm,
-    cancelSelectedActivity,
     loadActivity,
     loadingInitial
   } = activityStore;
@@ -28,38 +29,16 @@ export const ActivityDetails: React.FC<RouteComponentProps<DetailParams>> = ({
   if (loadingInitial || !activity)
     return <LoadingComponent content="Loading Activity..." />;
   return (
-    <div>
-      <Card fluid>
-        <Image
-          src={`/assets/categoryImages/${activity!.category}.jpg`}
-          wrapped
-          ui={false}
-        />
-        <Card.Content>
-          <Card.Header>{activity!.title}</Card.Header>
-          <Card.Meta>
-            <span>{activity!.date}</span>
-          </Card.Meta>
-          <Card.Description>{activity!.description}</Card.Description>
-        </Card.Content>
-        <Card.Content extra>
-          <Button.Group>
-            <Button
-              as ={Link} to={`/manage/${activity.id}`}
-              basic
-              color="blue"
-              content="Edit"
-            ></Button>
-            <Button
-              onClick={()=> history.push("/activities")}
-              basic
-              color="blue"
-              content="Cancel"
-            ></Button>
-          </Button.Group>
-        </Card.Content>
-      </Card>
-    </div>
-  );
+    <Grid>
+      <Grid.Column width={10}>
+        <ActivityDetailedHeader activity={activity}></ActivityDetailedHeader>
+        <ActivityDetailedInfo activity={activity}></ActivityDetailedInfo>
+        <ActivityDetailedChat></ActivityDetailedChat>
+      </Grid.Column>
+      <Grid.Column width={6}>
+        <ActivityDetailedSideBar></ActivityDetailedSideBar>
+      </Grid.Column>
+    </Grid>
+      );
 };
 export default observer(ActivityDetails);
