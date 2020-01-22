@@ -43,7 +43,7 @@ return activities;
         });
         this.loadingInitial = false;
       });
-      console.log(this.groupActivitesByDate(activities));
+      
     } catch (error) {
       console.log(error);
       runInAction("loading activities error", () => {
