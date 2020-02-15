@@ -2,6 +2,8 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Errors;
+using Application.Interfaces;
+using Domain;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -27,11 +29,13 @@ namespace Application.Users
         }
         public class Handler : IRequestHandler<Query, User>
         {
-            private readonly UserManager<User> _userManager;
-            private readonly SignInManager<User> _signInManager;
+            private readonly UserManager<AppUser> _userManager;
+            private readonly SignInManager<AppUser> _signInManager;
+            private readonly IJwtGenerator _jwtGenerator;
 
-            public Handler(UserManager<User> userManager, SignInManager<User> signInManager)
+            public Handler(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IJwtGenerator jwtGenerator)
             {
+                _jwtGenerator = jwtGenerator;
                 _signInManager = signInManager;
                 _userManager = userManager;
 
@@ -44,11 +48,12 @@ namespace Application.Users
 
                 var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
                 if (result.Succeeded)
-                {                    
+                {
+                    //return user;                  
                     return new User
                     {
                         DisplayName = user.DisplayName,
-                        Token = "This will be a token",
+                        Token = _jwtGenerator.CreateToken(user),
                         UserName = user.UserName,
                         Image = null
                     };

@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Application.Users;
+using Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
