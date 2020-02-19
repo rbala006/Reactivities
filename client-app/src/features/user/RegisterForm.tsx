@@ -9,17 +9,19 @@ import { combineValidators, isRequired } from "revalidate";
 import ErrorMessage from "../../app/common/form/ErrorMessage";
 
 const validate = combineValidators({
-  email: isRequired("email"),
-  password: isRequired("password")
+  username: isRequired("Username"),
+  displayName: isRequired("Display Name"),
+  email: isRequired("Email"),
+  password: isRequired("Password")
 });
 
-export const LoginForm = () => {
+const RegisterForm = () => {
   const rootStore = useContext(RootStoreContext);
-  const { login } = rootStore.userStore;
+  const { register } = rootStore.userStore;
   return (
     <FinalForm
       onSubmit={(values: IUserFormValues) =>
-        login(values).catch(error => ({
+        register(values).catch(error => ({
           [FORM_ERROR]: error
         }))
       }
@@ -34,7 +36,22 @@ export const LoginForm = () => {
         dirtySinceLastSubmit
       }) => (
         <Form onSubmit={handleSubmit} error>
-          <Header as='h2' content='Login to Reactivities'  color='teal' textAlign='center'></Header>
+          <Header
+            as="h2"
+            content="SignUp to Reactivities"
+            color="teal"
+            textAlign="center"
+          ></Header>
+          <Field
+            name="username"
+            component={TextInput}
+            placeholder="Username"
+          ></Field>
+          <Field
+            name="displayName"
+            component={TextInput}
+            placeholder="Display Name"
+          ></Field>
           <Field name="email" component={TextInput} placeholder="Email"></Field>
           <Field
             name="password"
@@ -43,18 +60,19 @@ export const LoginForm = () => {
             type="password"
           ></Field>
           {submitError && !dirtySinceLastSubmit && (
-            <ErrorMessage error={submitError}  text='Invalid Email or Password'></ErrorMessage>
+            <ErrorMessage error={submitError}></ErrorMessage>
           )}
-          
+
           <Button
             disabled={(invalid && !dirtySinceLastSubmit) || pristine}
             loading={submitting}
             positive
-            content="Login"
+            content="Register"
           ></Button>
-          
         </Form>
       )}
     />
   );
 };
+
+export default RegisterForm;

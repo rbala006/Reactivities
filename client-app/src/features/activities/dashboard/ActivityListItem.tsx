@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { Item, Button, Segment, Icon } from "semantic-ui-react";
-import ActivityStore from "../../../app/stores/activityStore";
 import { Link } from "react-router-dom";
 import { IActivity } from "../../../app/Modal/Activity";
 import { format} from 'date-fns';
