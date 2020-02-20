@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-
+using AutoMapper;
 
 namespace API
 {
@@ -39,6 +39,7 @@ namespace API
         {
             services.AddDbContext<DataContext>(opt =>
             {
+                opt.UseLazyLoadingProxies();
                 opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
             });
             services.AddCors(opt =>
@@ -50,16 +51,11 @@ namespace API
             });
 
             services.AddMediatR(typeof(List.Handler).Assembly);
-            //services.AddMediatR(typeof(List.Handler));
-            //services.AddMediatR(typeof(List.Handler).Assembly);
-            //services.AddMediatR(Assembly.GetExecutingAssembly());
-            //services.AddMediatR(typeof(Application.Users.Login+Query),typeof(Application.Users.User));
-            //services.AddMediatR(new[] { typeof(Application.Users.Login.Query).GetType().Assembly, typeof(Application.Users.User).GetType().Assembly });
-            //services.AddMediatR(typeof(Application.Users.Login.Query));
-            //services.AddScoped(typeof(Application.Users.User));            
+            services.AddAutoMapper(typeof(List.Handler));
 
-            services.AddControllers(opt =>{
-                var policy =new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+            services.AddControllers(opt =>
+            {
+                var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
                 opt.Filters.Add(new AuthorizeFilter(policy));
             }
 
@@ -72,6 +68,15 @@ namespace API
             var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
             identityBuilder.AddEntityFrameworkStores<DataContext>();
             identityBuilder.AddSignInManager<SignInManager<AppUser>>();
+
+            services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy("IsActivityHost", policy =>
+                 {
+                     policy.Requirements.Add(new IsHostRequirement());
+                 });
+            });
+            services.AddTransient<IAuthorizationHandler,IsHostRequirementHandler>();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -106,7 +111,7 @@ namespace API
 
             app.UseAuthentication();
             app.UseAuthorization();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
