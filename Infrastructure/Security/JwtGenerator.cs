@@ -7,6 +7,7 @@ using Application.Interfaces;
 using Domain;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Infrastructure.Security
 {
@@ -28,7 +29,7 @@ namespace Infrastructure.Security
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(claims),
+                Subject = new ClaimsIdentity(claims,JwtBearerDefaults.AuthenticationScheme),
                 Expires = DateTime.Now.AddDays(7),
                 SigningCredentials = creds
             };

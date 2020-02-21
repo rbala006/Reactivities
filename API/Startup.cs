@@ -41,6 +41,7 @@ namespace API
             {
                 opt.UseLazyLoadingProxies();
                 opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+                //opt.UseSqlite(Configuration["ConnectionStrings::DefaultConnection"]);
             });
             services.AddCors(opt =>
             {
@@ -77,6 +78,7 @@ namespace API
                  });
             });
             services.AddTransient<IAuthorizationHandler,IsHostRequirementHandler>();
+            //services.AddSingleton<IAuthorizationHandler,IsHostRequirementHandler>();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
