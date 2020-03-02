@@ -1,5 +1,5 @@
 import { IUser } from "../../Modal/User";
-import { IActivity } from "../../Modal/Activity";
+import { IActivity, IAttendee } from "../../Modal/Activity";
 
 export const combineDateAndTime = (date: Date, time: Date) => {
     const timeString = time.getHours() + ':' + time.getMinutes() + ':00';
@@ -12,14 +12,23 @@ export const combineDateAndTime = (date: Date, time: Date) => {
     return new Date(dateString + ' ' + timeString);
 }
 
-export const setActivityProps = (activity: IActivity, user: IUser) => {    
+export const setActivityProps = (activity: IActivity, user: IUser) => {
     activity.date = new Date(activity.date);
-    console.log(user);
+
     activity.isGoing = activity.attendees.some(
         a => a.username === user.userName
     );
     activity.isHost = activity.attendees.some(
-        a => a.username === user.userName && a.isHost
+        a => (a.username === user.userName && a.isHost)
     );
     return activity;
+}
+
+export const createAttendee = (user: IUser): IAttendee => {
+    return {
+        displayname: user.displayName,
+        isHost: false,
+        username: user.userName,
+        image: user.image!
+    }
 }

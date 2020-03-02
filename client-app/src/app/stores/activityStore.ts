@@ -1,17 +1,17 @@
 import { observable, action, computed, runInAction } from "mobx";
-import {  SyntheticEvent } from "react";
+import { SyntheticEvent } from "react";
 import { IActivity } from "../Modal/Activity";
 import agent from "../api/agent";
 import { history } from "../..";
 import { toast } from "react-toastify";
 import { RootStore } from "./rootStore";
-import { setActivityProps } from "../common/util/util";
+import { setActivityProps, createAttendee } from "../common/util/util";
 
 export default class ActivityStore {
-rootStore: RootStore;
-constructor(rootStore: RootStore){
-  this.rootStore=rootStore;
-}
+  rootStore: RootStore;
+  constructor(rootStore: RootStore) {
+    this.rootStore = rootStore;
+  }
 
   @observable activityRegistry = new Map();
   @observable activities: IActivity[] = [];
@@ -21,7 +21,7 @@ constructor(rootStore: RootStore){
   @observable target = "";
 
   @computed get activitiesByDate() {
-    
+
     return this.groupActivitesByDate(
       Array.from(this.activityRegistry.values())
     );
@@ -29,29 +29,29 @@ constructor(rootStore: RootStore){
 
   groupActivitesByDate(activities: IActivity[]) {
     const sortedActivties = activities.sort(
-      (a, b) => a.date.getTime() - b.date.getTime() 
+      (a, b) => a.date.getTime() - b.date.getTime()
     )
-    return Object.entries(sortedActivties.reduce((activities,activity)=>{
-const date=activity.date.toISOString().split('T')[0];
-activities[date]=activities[date] ? [...activities[date],activity]:[activity];
-return activities;
-    },{} as {[key:string]:IActivity[]})
+    return Object.entries(sortedActivties.reduce((activities, activity) => {
+      const date = activity.date.toISOString().split('T')[0];
+      activities[date] = activities[date] ? [...activities[date], activity] : [activity];
+      return activities;
+    }, {} as { [key: string]: IActivity[] })
     );
   }
 
   @action loadActivities = async () => {
     this.loadingInitial = true;
-    
+
     try {
       const activities = await agent.Activities.list();
       runInAction("loading activities", () => {
         activities.forEach(activity => {
-          setActivityProps(activity,this.rootStore.userStore.user!);          
+          setActivityProps(activity, this.rootStore.userStore.user!);
           this.activityRegistry.set(activity.id, activity);
         });
         this.loadingInitial = false;
       });
-      
+
     } catch (error) {
       console.log(error);
       runInAction("loading activities error", () => {
@@ -70,7 +70,7 @@ return activities;
       try {
         activity = await agent.Activities.details(id);
         runInAction("getting activity", () => {
-          setActivityProps(activity,this.rootStore.userStore.user!);      
+          setActivityProps(activity, this.rootStore.userStore.user!);
           this.activity = activity;
           this.activityRegistry.set(activity.id, activity);
           this.loadingInitial = false;
@@ -99,7 +99,7 @@ return activities;
       await agent.Activities.create(activity);
       runInAction("Create activities", () => {
         this.activityRegistry.set(activity.id, activity);
-        this.submitting = false;        
+        this.submitting = false;
       });
       history.push(`/activities/${activity.id}`);
     } catch (error) {
@@ -150,6 +150,28 @@ return activities;
       });
     }
   };
-}
 
+  @action attendActivity = () => {
+    const attendee = createAttendee(this.rootStore.userStore.user!)
+    console.log(attendee);
+    if (this.activity) {
+      this.activity.attendees.push(attendee);
+      this.activity.isGoing = true;
+      
+      this.activityRegistry.set(this.activity.id, this.activity);
+      console.log(this.activity);
+    }
+    console.log("a");
+  };
+  @action cancelAttendance = () => {
+    if (this.activity) {
+      this.activity.attendees = this.activity.attendees.filter(
+        a => a.username !== this.rootStore.userStore.user!.userName
+      );
+      this.activity.isGoing = false;
+      this.activityRegistry.set(this.activity.id, this.activity);
+    }
+  }
+
+}
 

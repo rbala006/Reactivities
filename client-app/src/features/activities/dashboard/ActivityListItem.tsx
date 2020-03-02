@@ -12,6 +12,7 @@ export const ActivityListItem: React.FC<{ activity: IActivity }> = ({
 }) => {
   // const rootStore = useContext(RootStoreContext);
   // const { deleteActivity, submitting, target } = rootStore.activityStore;
+  debugger;
   const host = activity.attendees.filter(x => x.isHost)[0];
   return (
     <Segment.Group>
@@ -20,9 +21,7 @@ export const ActivityListItem: React.FC<{ activity: IActivity }> = ({
           <Item>
             <Item.Image
               size="tiny"
-              circular
-              src="/assets/user.png"
-            ></Item.Image>
+              circular src={host.image || '/assets/user.png'}></Item.Image>
             <Item.Content>
               <Item.Header as={Link} to={`/activities/${activity.id}`}>
                 {activity.title}

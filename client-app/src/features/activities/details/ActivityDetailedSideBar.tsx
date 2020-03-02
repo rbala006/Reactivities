@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import { Segment, List, Item, Label, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { IAttendee } from "../../../app/Modal/Activity";
+import {  observer } from "mobx-react-lite";
 
 interface IProps {
   attendees: IAttendee[];
@@ -51,3 +52,6 @@ export const ActivityDetailedSideBar: React.FC<IProps> = ({ attendees }) => {
     </Fragment>
   );
 };
+
+
+export default observer(ActivityDetailedSideBar);
