@@ -1,11 +1,9 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Item, Button, Segment, Icon, Label } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { IActivity } from "../../../app/Modal/Activity";
 import { format } from "date-fns";
-import { RootStoreContext } from "../../../app/stores/rootStore";
 import { ActivityListItemAttendees } from "./ActivityListItemAttendees";
-import { link } from "fs";
 
 export const ActivityListItem: React.FC<{ activity: IActivity }> = ({
   activity

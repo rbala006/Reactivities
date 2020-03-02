@@ -2,14 +2,14 @@ import React, { Fragment } from "react";
 import { Segment, List, Item, Label, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { IAttendee } from "../../../app/Modal/Activity";
-import {  observer } from "mobx-react-lite";
+import { observer } from "mobx-react-lite";
+
 
 interface IProps {
   attendees: IAttendee[];
 }
 
-export const ActivityDetailedSideBar: React.FC<IProps> = ({ attendees }) => {
-  const isHost = false;
+export const ActivityDetailedSideBar: React.FC<IProps> = ({ attendees }) => {  
   return (
     <Fragment>
       <Segment
@@ -27,7 +27,7 @@ export const ActivityDetailedSideBar: React.FC<IProps> = ({ attendees }) => {
         <List relaxed divided>
           {attendees.map(attendee => (
             <Item style={{ position: "relative" }}>
-              {isHost && (
+              {attendee.isHost && (
                 <Label
                   style={{ position: "absolute" }}
                   color="orange"
